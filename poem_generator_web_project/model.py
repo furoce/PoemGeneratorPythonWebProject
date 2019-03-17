@@ -19,8 +19,14 @@ class MODEL:
             embedding = tf.get_variable("embedding", [wordNum, hidden_units], dtype = tf.float32)
             inputbatch = tf.nn.embedding_lookup(embedding, gtX)
 
+        # basicCell = []
+        # for i in range(layers):
+        #     basicCell.append(tf.contrib.rnn.BasicLSTMCell(hidden_units, state_is_tuple=True))
+        # stackCell = tf.contrib.rnn.MultiRNNCell(basicCell, state_is_tuple = True)
+
         basicCell = tf.contrib.rnn.BasicLSTMCell(hidden_units, state_is_tuple = True)
         stackCell = tf.contrib.rnn.MultiRNNCell([basicCell] * layers)
+
         initState = stackCell.zero_state(np.shape(gtX)[0], tf.float32)
         outputs, finalState = tf.nn.dynamic_rnn(stackCell, inputbatch, initial_state = initState)
         outputs = tf.reshape(outputs, [-1, hidden_units])
@@ -120,8 +126,8 @@ class MODEL:
                     poem += word
                     if word in ['。', '？', '！', '，']:
                         sentenceNum += 1
-                        if sentenceNum % 2 == 0:
-                            poem += '\n'
+                        # if sentenceNum % 2 == 0:
+                        #     poem += '\n'
                     x = np.array([[self.trainData.wordToID[word]]])
                     #print(word)
                     probs2, state = sess.run([probs, finalState], feed_dict={gtX: x, initState: state})

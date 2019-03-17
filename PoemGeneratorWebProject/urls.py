@@ -19,5 +19,5 @@ from poem_generator_web_project import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path(r'', views.getPoem)
+    path(r'getPoemTest/', views.getPoemTest)
 ]
