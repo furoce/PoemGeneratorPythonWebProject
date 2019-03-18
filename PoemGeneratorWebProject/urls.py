@@ -14,10 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.conf.urls import url
 from poem_generator_web_project import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path(r'getPoemTest/', views.getPoemTest)
+    url(r'^admin/', admin.site.urls),
+    url(r'^getTestPoem/', views.getTestPoem),
+    url(r'^getHeadPoem/(\w+)/$', views.getHeadPoem),
 ]

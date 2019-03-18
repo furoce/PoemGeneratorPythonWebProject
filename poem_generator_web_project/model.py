@@ -174,7 +174,7 @@ class MODEL:
                 if endSign[flag] == '。':
                     probs2, state = sess.run([probs, finalState],
                                              feed_dict={gtX: np.array([[self.trainData.wordToID["。"]]]), initState: state})
-                    poem += '\n'
+                    # poem += '\n'
                 else:
                     probs2, state = sess.run([probs, finalState],
                                              feed_dict={gtX: np.array([[self.trainData.wordToID["，"]]]), initState: state})

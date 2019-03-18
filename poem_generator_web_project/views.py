@@ -7,10 +7,17 @@ from poem_generator_web_project.config import *
 
 # Create your views here.
 
-def getPoemTest(request):
-    trainData = data.POEMS(trainPoems)
-    MCPangHu = model.MODEL(trainData)
+trainData = data.POEMS(trainPoems)
+MCPangHu = model.MODEL(trainData)
+
+def getTestPoem(request):
     poems = MCPangHu.test()
     tf.reset_default_graph()
     resp = {'poem': poems}
+    return HttpResponse(json.dumps(resp), content_type="application/json")
+
+def getHeadPoem(request, characters):
+    poem = MCPangHu.testHead(characters)
+    tf.reset_default_graph()
+    resp = {'poem': poem}
     return HttpResponse(json.dumps(resp), content_type="application/json")
