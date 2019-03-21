@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^getTestPoem/', views.getTestPoem),
     url(r'^getHeadPoem/(\w+)/$', views.getHeadPoem),
+    url(r'^getTailPoem/(\w+)/$', views.getTailPoem),
 ]
