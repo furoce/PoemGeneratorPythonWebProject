@@ -233,12 +233,10 @@ class MODEL:
 
     def getTail(self, characters):
         poem = ''
-        sentence = ''
         for word in characters:
-
             sentence = self.getSentence(word)
             while True:
-                if sentence[-2] == word:
+                if sentence.__len__() >= 2 and sentence[-2] == word:
                     tf.reset_default_graph()
                     print(sentence)
                     break
