@@ -183,7 +183,7 @@ class MODEL:
             print(poem)
             return poem
 
-    def getSentence(self, characters):
+    def testTail(self, characters):
         """write head poem"""
         print("genrating...")
         gtX = tf.placeholder(tf.int32, shape=[1, None])  # input
@@ -206,16 +206,15 @@ class MODEL:
             x = np.array([[self.trainData.wordToID['[']]])
             probs1, state = sess.run([probs, finalState], feed_dict={gtX: x, initState: state})
             for word in characters:
-                wordNew = self.probsToWord(probs1, self.trainData.words)
-                if self.trainData.wordToID.get(wordNew) == None:
+                if self.trainData.wordToID.get(word) == None:
                     print("胖虎不认识这个字，你真是文化人！")
                     exit(0)
                 flag = -flag
-                while wordNew not in [']', '，', '。', ' ', '？', '！']:
-                    poem += wordNew
-                    x = np.array([[self.trainData.wordToID[wordNew]]])
+                while word not in [']', '，', '。', ' ', '？', '！']:
+                    poem = word + poem
+                    x = np.array([[self.trainData.wordToID[word]]])
                     probs2, state = sess.run([probs, finalState], feed_dict={gtX: x, initState: state})
-                    wordNew = self.probsToWord(probs2, self.trainData.words)
+                    word = self.probsToWord(probs2, self.trainData.words)
 
                 poem += endSign[flag]
                 # keep the context, state must be updated
@@ -227,21 +226,6 @@ class MODEL:
                     probs2, state = sess.run([probs, finalState],
                                              feed_dict={gtX: np.array([[self.trainData.wordToID["，"]]]), initState: state})
 
-            # print(characters)
-            # print(poem)
+            print(characters)
+            print(poem)
             return poem
-
-    def getTail(self, characters):
-        poem = ''
-        for word in characters:
-            sentence = self.getSentence(word)
-            while True:
-                if sentence.__len__() >= 2 and sentence[-2] == word:
-                    tf.reset_default_graph()
-                    print(sentence)
-                    break
-                else:
-                    tf.reset_default_graph()
-                    sentence = self.getSentence(word)
-            poem += sentence
-        return poem

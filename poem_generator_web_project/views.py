@@ -23,7 +23,7 @@ def getHeadPoem(request, characters):
     return HttpResponse(json.dumps(resp), content_type="application/json")
 
 def getTailPoem(request, characters):
-    poem = MCPangHu.getTail(characters)
+    poem = MCPangHu.testTail(characters)
     tf.reset_default_graph()
     resp = {'poem': poem}
     return HttpResponse(json.dumps(resp), content_type="application/json")
