@@ -206,17 +206,19 @@ class MODEL:
             x = np.array([[self.trainData.wordToID['[']]])
             probs1, state = sess.run([probs, finalState], feed_dict={gtX: x, initState: state})
             for word in characters:
+                sentence = ''
                 if self.trainData.wordToID.get(word) == None:
                     print("胖虎不认识这个字，你真是文化人！")
                     exit(0)
                 flag = -flag
                 while word not in [']', '，', '。', ' ', '？', '！']:
-                    poem = word + poem
+                    sentence = word + sentence
                     x = np.array([[self.trainData.wordToID[word]]])
                     probs2, state = sess.run([probs, finalState], feed_dict={gtX: x, initState: state})
                     word = self.probsToWord(probs2, self.trainData.words)
 
-                poem += endSign[flag]
+                sentence += endSign[flag]
+                poem += sentence
                 # keep the context, state must be updated
                 if endSign[flag] == '。':
                     probs2, state = sess.run([probs, finalState],
