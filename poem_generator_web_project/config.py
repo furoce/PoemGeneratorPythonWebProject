@@ -23,7 +23,7 @@ learningRateDecayRate = 0.95
 epochNum = 10                    # train epoch
 generateNum = 1                   # number of generated poems per time
 
-type = "reversePoem"                   # dataset to use, shijing, songci, etc
+type = "poetrySong"                   # dataset to use, shijing, songci, etc
 trainPoems = "./poem_generator_web_project/dataset/" + type + "/" + type + ".txt" # training file location
 checkpointsPath = "./poem_generator_web_project/checkpoints/" + type # checkpoints location
 

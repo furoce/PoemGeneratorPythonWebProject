@@ -11,22 +11,19 @@ trainData = data.POEMS(trainPoems)
 MCPangHu = model.MODEL(trainData)
 
 def getTestPoem(request):
-    poems = MCPangHu.test()
+    poem = MCPangHu.test()
     tf.reset_default_graph()
-    resp = {'poem': poems}
-    return HttpResponse(json.dumps(resp), content_type="application/json")
+    return HttpResponse(poem, content_type="application/json")
 
 def getHeadPoem(request, characters):
     poem = MCPangHu.testHead(characters)
     tf.reset_default_graph()
-    resp = {'poem': poem}
-    return HttpResponse(json.dumps(resp), content_type="application/json")
+    return HttpResponse(poem, content_type="application/json")
 
 def getTailPoem(request, characters):
     poem = MCPangHu.testTail(characters)
     tf.reset_default_graph()
-    resp = {'poem': poem}
-    return HttpResponse(json.dumps(resp), content_type="application/json")
+    return HttpResponse(poem, content_type="application/json")
 
 def train(request):
     MCPangHu.train()
