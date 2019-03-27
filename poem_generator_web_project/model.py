@@ -63,8 +63,10 @@ class MODEL:
         optimizer = tf.train.AdamOptimizer(learningRate)
         trainOP = optimizer.apply_gradients(zip(grads, trainableVariables))
 
+        os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+        gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.7)
 
-        with tf.Session() as sess:
+        with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
             sess.run(tf.global_variables_initializer())
             saver = tf.train.Saver()
 
@@ -126,8 +128,8 @@ class MODEL:
                     poem += word
                     if word in ['。', '？', '！', '，']:
                         sentenceNum += 1
-                        # if sentenceNum % 2 == 0:
-                        #     poem += '\n'
+                        if sentenceNum % 2 == 0:
+                            poem += '\n'
                     x = np.array([[self.trainData.wordToID[word]]])
                     #print(word)
                     probs2, state = sess.run([probs, finalState], feed_dict={gtX: x, initState: state})
@@ -174,7 +176,7 @@ class MODEL:
                 if endSign[flag] == '。':
                     probs2, state = sess.run([probs, finalState],
                                              feed_dict={gtX: np.array([[self.trainData.wordToID["。"]]]), initState: state})
-                    # poem += '\n'
+                    poem += '\n'
                 else:
                     probs2, state = sess.run([probs, finalState],
                                              feed_dict={gtX: np.array([[self.trainData.wordToID["，"]]]), initState: state})
@@ -223,7 +225,7 @@ class MODEL:
                 if endSign[flag] == '。':
                     probs2, state = sess.run([probs, finalState],
                                              feed_dict={gtX: np.array([[self.trainData.wordToID["。"]]]), initState: state})
-                    # poem += '\n'
+                    poem += '\n'
                 else:
                     probs2, state = sess.run([probs, finalState],
                                              feed_dict={gtX: np.array([[self.trainData.wordToID["，"]]]), initState: state})
