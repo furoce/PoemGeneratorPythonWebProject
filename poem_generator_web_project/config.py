@@ -27,6 +27,9 @@ type = "poetrySong"                   # dataset to use, shijing, songci, etc
 trainPoems = "./poem_generator_web_project/dataset/" + type + "/" + type + ".txt" # training file location
 checkpointsPath = "./poem_generator_web_project/checkpoints/" + type # checkpoints location
 
+typeReverse = "reversePoem"
+checkpointsPathReverse = "./poem_generator_web_project/checkpoints/" + typeReverse
+
 saveStep = 1000                   # save model every savestep
 
 

@@ -193,7 +193,7 @@ class MODEL:
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
             saver = tf.train.Saver()
-            checkPoint = tf.train.get_checkpoint_state(checkpointsPath)
+            checkPoint = tf.train.get_checkpoint_state(checkpointsPathReverse)
             # if have checkPoint, restore checkPoint
             if checkPoint and checkPoint.model_checkpoint_path:
                 saver.restore(sess, checkPoint.model_checkpoint_path)
