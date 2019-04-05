@@ -1,0 +1,4 @@
+model_checkpoint_path: "tangSeven-2999"
+all_model_checkpoint_paths: "tangSeven-999"
+all_model_checkpoint_paths: "tangSeven-1999"
+all_model_checkpoint_paths: "tangSeven-2999"

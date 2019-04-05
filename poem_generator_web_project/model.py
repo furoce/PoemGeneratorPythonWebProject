@@ -39,59 +39,6 @@ class MODEL:
         probs = tf.nn.softmax(logits)
         return logits, probs, stackCell, initState, finalState
 
-    def train(self, reload=True):
-        """train model"""
-        print("training...")
-        gtX = tf.placeholder(tf.int32, shape=[batchSize, None])  # input
-        gtY = tf.placeholder(tf.int32, shape=[batchSize, None])  # output
-
-        logits, probs, a, b, c = self.buildModel(self.trainData.wordNum, gtX)
-
-        targets = tf.reshape(gtY, [-1])
-
-        #loss
-        loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example([logits], [targets],
-                                                                  [tf.ones_like(targets, dtype=tf.float32)])
-        globalStep = tf.Variable(0, trainable=False)
-        addGlobalStep = globalStep.assign_add(1)
-
-        cost = tf.reduce_mean(loss)
-        trainableVariables = tf.trainable_variables()
-        grads, a = tf.clip_by_global_norm(tf.gradients(cost, trainableVariables), 5) # prevent loss divergence caused by gradient explosion
-        learningRate = tf.train.exponential_decay(learningRateBase, global_step=globalStep,
-                                                  decay_steps=learningRateDecayStep, decay_rate=learningRateDecayRate)
-        optimizer = tf.train.AdamOptimizer(learningRate)
-        trainOP = optimizer.apply_gradients(zip(grads, trainableVariables))
-
-        os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-        gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.7)
-
-        with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
-            sess.run(tf.global_variables_initializer())
-            saver = tf.train.Saver()
-
-            if not os.path.exists(checkpointsPath):
-                os.mkdir(checkpointsPath)
-
-            if reload:
-                checkPoint = tf.train.get_checkpoint_state(checkpointsPath)
-                # if have checkPoint, restore checkPoint
-                if checkPoint and checkPoint.model_checkpoint_path:
-                    saver.restore(sess, checkPoint.model_checkpoint_path)
-                    print("restored %s" % checkPoint.model_checkpoint_path)
-                else:
-                    print("no checkpoint found!")
-
-            for epoch in range(epochNum):
-                X, Y = self.trainData.generateBatch()
-                epochSteps = len(X) # equal to batch
-                for step, (x, y) in enumerate(zip(X, Y)):
-                    a, loss, gStep = sess.run([trainOP, cost, addGlobalStep], feed_dict = {gtX:x, gtY:y})
-                    print("epoch: %d, steps: %d/%d, loss: %3f" % (epoch + 1, step + 1, epochSteps, loss))
-                    if gStep % saveStep == saveStep - 1: # prevent save at the beginning
-                        print("save model")
-                        saver.save(sess, os.path.join(checkpointsPath, type), global_step=gStep)
-
     def probsToWord(self, weights, words):
         """probs to word"""
         prefixSum = np.cumsum(weights) #prefix sum
@@ -99,9 +46,9 @@ class MODEL:
         index = np.searchsorted(prefixSum, ratio * prefixSum[-1]) # large margin has high possibility to be sampled
         return words[index[0]]
 
-    def test(self):
+    def test(self, checkpointsPath):
         """write regular poem"""
-        print("genrating...")
+        logging.info("genrating...")
         gtX = tf.placeholder(tf.int32, shape=[1, None])  # input
         logits, probs, stackCell, initState, finalState = self.buildModel(self.trainData.wordNum, gtX)
         with tf.Session() as sess:
@@ -111,9 +58,9 @@ class MODEL:
             # if have checkPoint, restore checkPoint
             if checkPoint and checkPoint.model_checkpoint_path:
                 saver.restore(sess, checkPoint.model_checkpoint_path)
-                print("restored %s" % checkPoint.model_checkpoint_path)
+                logging.info("restored %s" % checkPoint.model_checkpoint_path)
             else:
-                print("no checkpoint found!")
+                logging.info("no checkpoint found!")
                 exit(1)
 
             poems = []
@@ -131,16 +78,16 @@ class MODEL:
                         if sentenceNum % 2 == 0:
                             poem += '\n'
                     x = np.array([[self.trainData.wordToID[word]]])
-                    #print(word)
+                    #logging.info(word)
                     probs2, state = sess.run([probs, finalState], feed_dict={gtX: x, initState: state})
                     word = self.probsToWord(probs2, self.trainData.words)
-                print(poem)
+                logging.info(poem)
                 poems.append(poem)
             return poems
 
-    def testHead(self, characters):
+    def testHead(self, checkpointsPath, characters):
         """write head poem"""
-        print("genrating...")
+        logging.info("genrating...")
         gtX = tf.placeholder(tf.int32, shape=[1, None])  # input
         logits, probs, stackCell, initState, finalState = self.buildModel(self.trainData.wordNum, gtX)
         with tf.Session() as sess:
@@ -150,9 +97,9 @@ class MODEL:
             # if have checkPoint, restore checkPoint
             if checkPoint and checkPoint.model_checkpoint_path:
                 saver.restore(sess, checkPoint.model_checkpoint_path)
-                print("restored %s" % checkPoint.model_checkpoint_path)
+                logging.info("restored %s" % checkPoint.model_checkpoint_path)
             else:
-                print("no checkpoint found!")
+                logging.info("no checkpoint found!")
                 exit(1)
             flag = 1
             endSign = {-1: "，", 1: "。"}
@@ -162,7 +109,7 @@ class MODEL:
             probs1, state = sess.run([probs, finalState], feed_dict={gtX: x, initState: state})
             for word in characters:
                 if self.trainData.wordToID.get(word) == None:
-                    print("胖虎不认识这个字，你真是文化人！")
+                    logging.info("胖虎不认识这个字，你真是文化人！")
                     exit(0)
                 flag = -flag
                 while word not in [']', '，', '。', ' ', '？', '！']:
@@ -181,25 +128,25 @@ class MODEL:
                     probs2, state = sess.run([probs, finalState],
                                              feed_dict={gtX: np.array([[self.trainData.wordToID["，"]]]), initState: state})
 
-            print(characters)
-            print(poem)
+            logging.info(characters)
+            logging.info(poem)
             return poem
 
-    def testTail(self, characters):
+    def testTail(self, checkpointsPath, characters):
         """write head poem"""
-        print("genrating...")
+        logging.info("genrating...")
         gtX = tf.placeholder(tf.int32, shape=[1, None])  # input
         logits, probs, stackCell, initState, finalState = self.buildModel(self.trainData.wordNum, gtX)
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
             saver = tf.train.Saver()
-            checkPoint = tf.train.get_checkpoint_state(checkpointsPathReverse)
+            checkPoint = tf.train.get_checkpoint_state(checkpointsPath)
             # if have checkPoint, restore checkPoint
             if checkPoint and checkPoint.model_checkpoint_path:
                 saver.restore(sess, checkPoint.model_checkpoint_path)
-                print("restored %s" % checkPoint.model_checkpoint_path)
+                logging.info("restored %s" % checkPoint.model_checkpoint_path)
             else:
-                print("no checkpoint found!")
+                logging.info("no checkpoint found!")
                 exit(1)
             flag = 1
             endSign = {-1: "，", 1: "。"}
@@ -210,8 +157,9 @@ class MODEL:
             for word in characters:
                 sentence = ''
                 if self.trainData.wordToID.get(word) == None:
-                    print("胖虎不认识这个字，你真是文化人！")
+                    logging.info("胖虎不认识这个字，你真是文化人！")
                     exit(0)
+                    tf.reset_default_graph()
                 flag = -flag
                 while word not in [']', '，', '。', ' ', '？', '！']:
                     sentence = word + sentence
@@ -230,6 +178,6 @@ class MODEL:
                     probs2, state = sess.run([probs, finalState],
                                              feed_dict={gtX: np.array([[self.trainData.wordToID["，"]]]), initState: state})
 
-            print(characters)
-            print(poem)
+            logging.info(characters)
+            logging.info(poem)
             return poem

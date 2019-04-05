@@ -1,0 +1,5 @@
+model_checkpoint_path: "reverseTangFive-3999"
+all_model_checkpoint_paths: "reverseTangFive-999"
+all_model_checkpoint_paths: "reverseTangFive-1999"
+all_model_checkpoint_paths: "reverseTangFive-2999"
+all_model_checkpoint_paths: "reverseTangFive-3999"

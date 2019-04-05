@@ -1,0 +1,4 @@
+model_checkpoint_path: "reverseTangSeven-2999"
+all_model_checkpoint_paths: "reverseTangSeven-999"
+all_model_checkpoint_paths: "reverseTangSeven-1999"
+all_model_checkpoint_paths: "reverseTangSeven-2999"

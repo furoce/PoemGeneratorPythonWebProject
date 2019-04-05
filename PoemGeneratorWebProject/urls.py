@@ -19,8 +19,7 @@ from poem_generator_web_project import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^getTestPoem/', views.getTestPoem),
-    url(r'^getHeadPoem/(\w+)/$', views.getHeadPoem),
-    url(r'^getTailPoem/(\w+)/$', views.getTailPoem),
-    url(r'^train', views.train),
+    url(r'^poem/(\w+)/$', views.getPoem),
+    url(r'^CTS/(\w+)/(\w+)/$', views.getHeadPoem),
+    url(r'^CWS/(\w+)/(\w+)/$', views.getTailPoem),
 ]

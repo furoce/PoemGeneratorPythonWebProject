@@ -1,0 +1,5 @@
+model_checkpoint_path: "tangFive-3999"
+all_model_checkpoint_paths: "tangFive-999"
+all_model_checkpoint_paths: "tangFive-1999"
+all_model_checkpoint_paths: "tangFive-2999"
+all_model_checkpoint_paths: "tangFive-3999"

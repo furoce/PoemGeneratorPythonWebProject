@@ -23,13 +23,13 @@ class POEMS:
                 continue
             poem = '[' + poem + ']' #add start and end signs
             poems.append(poem)
-            #print(title, author, poem)
+            #logging.info(title, author, poem)
 
         #counting words
         wordFreq = collections.Counter()
         for poem in poems:
             wordFreq.update(poem)
-        # print(wordFreq)
+        # logging.info(wordFreq)
 
         # erase words which are not common
         #--------------------bug-------------------------
@@ -54,8 +54,8 @@ class POEMS:
         else:
             self.trainVector = poemsVector
             self.testVector = []
-        print("训练样本总数： %d" % len(self.trainVector))
-        print("测试样本总数： %d" % len(self.testVector))
+        logging.info("训练样本总数： %d" % len(self.trainVector))
+        logging.info("测试样本总数： %d" % len(self.testVector))
 
 
     def generateBatch(self, isTrain=True):

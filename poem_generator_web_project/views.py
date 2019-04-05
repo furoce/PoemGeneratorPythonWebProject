@@ -7,23 +7,32 @@ from poem_generator_web_project.config import *
 
 # Create your views here.
 
-trainData = data.POEMS(trainPoems)
-MCPangHu = model.MODEL(trainData)
-
-def getTestPoem(request):
-    poem = MCPangHu.test()
+def getPoem(request, poemType):
     tf.reset_default_graph()
+    trainPoems = "./poem_generator_web_project/dataset/" + poemType + ".txt"
+    trainData = data.POEMS(trainPoems)
+    MCPangHu = model.MODEL(trainData)
+    checkpointsPath = "./poem_generator_web_project/checkpoints/" + poemType
+    poem = MCPangHu.test(checkpointsPath)
     return HttpResponse(poem, content_type="application/json")
 
-def getHeadPoem(request, characters):
-    poem = MCPangHu.testHead(characters)
+def getHeadPoem(request, poemType, characters):
     tf.reset_default_graph()
+    poemType = poemType[:-3]
+    trainPoems = "./poem_generator_web_project/dataset/" + poemType + ".txt"
+    trainData = data.POEMS(trainPoems)
+    MCPangHu = model.MODEL(trainData)
+    checkpointsPath = "./poem_generator_web_project/checkpoints/" + poemType
+    poem = MCPangHu.testHead(checkpointsPath, characters)
     return HttpResponse(poem, content_type="application/json")
 
-def getTailPoem(request, characters):
-    poem = MCPangHu.testTail(characters)
+def getTailPoem(request, poemType, characters):
     tf.reset_default_graph()
+    poemType = poemType[:-3]
+    poemType = "reverse" + poemType[0].upper() + poemType[1:]
+    trainPoems = "./poem_generator_web_project/dataset/" + poemType + ".txt"
+    trainData = data.POEMS(trainPoems)
+    MCPangHu = model.MODEL(trainData)
+    checkpointsPath = "./poem_generator_web_project/checkpoints/" + poemType
+    poem = MCPangHu.testTail(checkpointsPath, characters)
     return HttpResponse(poem, content_type="application/json")
-
-def train(request):
-    MCPangHu.train()
