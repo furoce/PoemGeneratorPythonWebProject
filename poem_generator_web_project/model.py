@@ -109,7 +109,7 @@ class MODEL:
             probs1, state = sess.run([probs, finalState], feed_dict={gtX: x, initState: state})
             for word in characters:
                 if self.trainData.wordToID.get(word) == None:
-                    logging.info("胖虎不认识这个字，你真是文化人！")
+                    logging.info("胖虎不认识这个字，你真是文化人！关键字：" + word)
                     exit(0)
                 flag = -flag
                 while word not in [']', '，', '。', ' ', '？', '！']:
